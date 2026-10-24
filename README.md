@@ -54,7 +54,8 @@ Vercel cannot host Streamlit as a long-running server. Production on Vercel uses
 ### Limits
 
 - A full crew run takes **about 2–3 minutes** (three Groq calls plus short pauses for free-tier rate limits).
-- Set **`maxDuration`** in [`vercel.json`](vercel.json) to **300** seconds. On the Hobby plan, function timeouts are much lower, so long runs may fail unless you use a plan that allows 300s functions.
+- **`memory`** in [`vercel.json`](vercel.json) must be **2048 MB or less** on the free Hobby plan (we use 2048).
+- **`maxDuration`** is set to **300** seconds in config, but Hobby often allows only **short** function timeouts (often ~10s). A 2–3 minute crew run may still fail on Hobby even after deploy succeeds; Pro/team plans or Railway/Render are safer for this app.
 - The Python bundle includes CrewAI and LiteLLM; the first deploy or cold start can be slow. If the deployment exceeds Vercel’s size limit, use local Streamlit or a container host (Railway, Render) instead.
 
 ### Test locally with Vercel CLI
