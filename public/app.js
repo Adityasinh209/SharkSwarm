@@ -143,7 +143,16 @@ function setupTabs() {
 async function checkReady() {
   try {
     const res = await fetch("/api/evaluate");
-    const data = await res.json();
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error(`API returned ${res.status} (not JSON). ${text.slice(0, 120)}`);
+    }
+    if (!res.ok) {
+      throw new Error(data.error || `API error ${res.status}`);
+    }
     if (!data.ready) {
       warningEl.textContent = data.message || "GROQ_API_KEY is not configured on the server.";
       warningEl.classList.remove("hidden");
@@ -152,8 +161,9 @@ async function checkReady() {
     }
     warningEl.classList.add("hidden");
     runBtn.disabled = false;
-  } catch {
-    warningEl.textContent = "Could not reach /api/evaluate. Check the deployment logs.";
+  } catch (err) {
+    warningEl.textContent =
+      err.message || "Could not reach /api/evaluate. Check the deployment logs.";
     warningEl.classList.remove("hidden");
     runBtn.disabled = true;
   }

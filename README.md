@@ -48,9 +48,9 @@ Vercel cannot host Streamlit as a long-running server. Production on Vercel uses
 2. Set **Framework Preset** to **Other** (not Python/Flask). Root `requirements.txt` is for local dev only; Vercel uses [`api/requirements.txt`](api/requirements.txt).
 3. If you previously saw `PYTHON_ENTRYPOINT_NOT_FOUND` for `app.py`, redeploy with **Clear build cache** after pulling the latest `main` (there is no root `app.py`).
 4. Add environment variables (Production and Preview):
-   - `GROQ_API_KEY` — your Groq key
+   - `GROQ_API_KEY` — your Groq key (**required**; without it the UI shows a warning and `/api/evaluate` returns `"ready": false`)
    - `GROQ_MODEL` — optional, default `qwen/qwen3.8-27b`
-5. Deploy.
+5. Deploy, then open `https://your-project.vercel.app/api/evaluate` in the browser. You should see JSON like `{"service":"SharkSwarm","ready":true,...}`.
 
 ### Limits
 
