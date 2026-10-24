@@ -8,3 +8,6 @@ __pycache__
 .vscode
 streamlit_app.py
 app.py
+requirements.txt
+SYNOPSIS.md
+.python-version

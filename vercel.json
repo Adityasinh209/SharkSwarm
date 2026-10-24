@@ -1,11 +1,14 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "",
+  "framework": null,
+  "installCommand": "",
+  "buildCommand": null,
   "outputDirectory": "public",
   "functions": {
     "api/**/*.py": {
       "maxDuration": 300,
-      "memory": 2048
+      "memory": 2048,
+      "excludeFiles": "{streamlit_app.py,**/.venv/**,**/tests/**}"
     }
   }
 }

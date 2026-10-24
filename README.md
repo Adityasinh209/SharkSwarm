@@ -45,11 +45,12 @@ Vercel cannot host Streamlit as a long-running server. Production on Vercel uses
 ### Steps
 
 1. Import [github.com/Adityasinh209/SharkSwarm](https://github.com/Adityasinh209/SharkSwarm) in the [Vercel dashboard](https://vercel.com/new).
-2. Leave the default framework preset (static `public/` + Python functions).
-3. Add environment variables (Production and Preview):
+2. Set **Framework Preset** to **Other** (not Python/Flask). Root `requirements.txt` is for local dev only; Vercel uses [`api/requirements.txt`](api/requirements.txt).
+3. If you previously saw `PYTHON_ENTRYPOINT_NOT_FOUND` for `app.py`, redeploy with **Clear build cache** after pulling the latest `main` (there is no root `app.py`).
+4. Add environment variables (Production and Preview):
    - `GROQ_API_KEY` — your Groq key
    - `GROQ_MODEL` — optional, default `qwen/qwen3.8-27b`
-4. Deploy.
+5. Deploy.
 
 ### Limits
 
