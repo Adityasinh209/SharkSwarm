@@ -7,7 +7,7 @@
     "api/**/*.py": {
       "maxDuration": 300,
       "memory": 2048,
-      "excludeFiles": "{streamlit_app.py,**/.venv/**,**/tests/**,requirements.txt}"
+      "excludeFiles": "{streamlit_app.py,src/crew.py,requirements.txt,SYNOPSIS.md,README.md,**/.venv/**,**/__pycache__/**,**/tests/**}"
     }
   }
 }

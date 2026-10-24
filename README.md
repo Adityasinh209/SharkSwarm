@@ -40,7 +40,8 @@ Type an idea, or use one of the sample ideas, then run the crew. The page shows 
 Vercel cannot host Streamlit as a long-running server. Production on Vercel uses:
 
 - **`public/`** — static web UI (same three tabs as Streamlit)
-- **`api/evaluate.py`** — serverless Python route that runs the CrewAI pipeline
+- **`api/evaluate.py`** — serverless Python route (same three-agent *logic* via LiteLLM + Instructor; no CrewAI in the bundle — stays under Vercel’s 500 MB limit)
+- **Local Streamlit** — full **CrewAI** orchestration in [`src/crew.py`](src/crew.py)
 
 ### Steps
 
@@ -57,7 +58,7 @@ Vercel cannot host Streamlit as a long-running server. Production on Vercel uses
 - A full crew run takes **about 2–3 minutes** (three Groq calls plus short pauses for free-tier rate limits).
 - **`memory`** in [`vercel.json`](vercel.json) must be **2048 MB or less** on the free Hobby plan (we use 2048).
 - **`maxDuration`** is set to **300** seconds in config, but Hobby often allows only **short** function timeouts (often ~10s). A 2–3 minute crew run may still fail on Hobby even after deploy succeeds; Pro/team plans or Railway/Render are safer for this app.
-- The Python bundle includes CrewAI and LiteLLM; the first deploy or cold start can be slow. If the deployment exceeds Vercel’s size limit, use local Streamlit or a container host (Railway, Render) instead.
+- Vercel uses [`src/lite_pipeline.py`](src/lite_pipeline.py) (LiteLLM only). If you see `LAMBDA_SIZE_EXCEEDED`, redeploy the latest `main` and clear the build cache — do not add `crewai` to [`api/requirements.txt`](api/requirements.txt).
 
 ### Test locally with Vercel CLI
 

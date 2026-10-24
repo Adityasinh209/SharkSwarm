@@ -44,7 +44,7 @@ class handler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         try:
-            from src.crew import run_evaluation
+            from src.lite_pipeline import run_evaluation
             from src.serialize import to_response
 
             length = int(self.headers.get("Content-Length", 0))
