@@ -201,7 +201,8 @@ def build_crew(on_task: Callable | None = None) -> Crew:
         # Free-tier Groq allows 1000 output tokens per minute. Each call reserves
         # max_tokens, so back-to-back agents get rejected. Wait out the window.
         if finished["count"] < 3:
-            time.sleep(45)
+            # Shorter pause on Vercel so the serverless function stays within maxDuration.
+            time.sleep(40 if os.getenv("VERCEL") else 45)
 
     return Crew(
         agents=[founder, officer, capitalist],

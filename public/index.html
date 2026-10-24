@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SharkSwarm</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header>
+        <h1>SharkSwarm</h1>
+        <p class="lede">
+          Three agents expand one idea into a pitch, a financial sketch, and a roast.
+          A full run takes a few minutes. Revenue numbers are model estimates, not financial advice.
+        </p>
+      </header>
+
+      <section class="panel">
+        <label for="idea">Startup idea</label>
+        <textarea
+          id="idea"
+          rows="5"
+          placeholder="Describe the product, who it is for, and the problem it solves."
+        ></textarea>
+
+        <div class="samples" id="samples"></div>
+
+        <p id="key-warning" class="warning hidden"></p>
+
+        <button type="button" id="run" class="primary">Run the crew</button>
+        <p id="status" class="status hidden" aria-live="polite"></p>
+        <p id="error" class="error hidden" role="alert"></p>
+      </section>
+
+      <section id="results" class="results hidden">
+        <div class="tabs" role="tablist">
+          <button type="button" class="tab active" data-tab="pitch" role="tab">Pitch</button>
+          <button type="button" class="tab" data-tab="financials" role="tab">Financials</button>
+          <button type="button" class="tab" data-tab="evaluation" role="tab">Evaluation</button>
+        </div>
+        <div id="pitch" class="tab-panel" role="tabpanel"></div>
+        <div id="financials" class="tab-panel hidden" role="tabpanel"></div>
+        <div id="evaluation" class="tab-panel hidden" role="tabpanel"></div>
+      </section>
+    </main>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
