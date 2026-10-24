@@ -3,12 +3,11 @@ import time
 from collections.abc import Callable
 from pathlib import Path
 
+from dotenv import load_dotenv
 from crewai import Agent, Crew, LLM, Process, Task
 from crewai.utilities.internal_instructor import InternalInstructor
 
-from src.env import load_env, require_api_key
-from src.finance import project_financials
-from src.schemas import Evaluation, FinancialSketch, Financials, Pitch
+from src.schemas import Evaluation, FinancialSketch, Financials, MonthRevenue, Pitch
 
 # CrewAI's structured-output call does not forward max_tokens. Groq's free
 # tier rejects any request that reserves more than 1000 output tokens.
@@ -38,6 +37,19 @@ def _to_pydantic_with_limits(self):
 
 InternalInstructor.to_pydantic = _to_pydantic_with_limits
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+ENV_FILE = PROJECT_ROOT / ".env"
+
+MISSING_KEY = (
+    "GROQ_API_KEY is missing. Copy .env.example to .env and paste a key from "
+    "https://console.groq.com/keys"
+)
+
+
+def load_env() -> None:
+    load_dotenv(ENV_FILE)
+
+
 load_env()
 
 DEFAULT_MODEL = "qwen/qwen3.8-27b"
@@ -48,6 +60,18 @@ def groq_model_name() -> str:
     if name.startswith("groq/"):
         return name
     return f"groq/{name}"
+
+
+def api_key() -> str:
+    load_env()
+    return os.getenv("GROQ_API_KEY", "").strip()
+
+
+def require_api_key() -> str:
+    key = api_key()
+    if not key:
+        raise RuntimeError(MISSING_KEY)
+    return key
 
 
 def _llm(temperature: float) -> LLM:
@@ -178,8 +202,7 @@ def build_crew(on_task: Callable | None = None) -> Crew:
         # Free-tier Groq allows 1000 output tokens per minute. Each call reserves
         # max_tokens, so back-to-back agents get rejected. Wait out the window.
         if finished["count"] < 3:
-            # Shorter pause on Vercel so the serverless function stays within maxDuration.
-            time.sleep(40 if os.getenv("VERCEL") else 45)
+            time.sleep(45)
 
     return Crew(
         agents=[founder, officer, capitalist],
@@ -216,3 +239,27 @@ def run_evaluation(idea: str, on_task: Callable | None = None):
     sketch = _as_model(outputs[1].pydantic, FinancialSketch)
     evaluation = _as_model(outputs[2].pydantic, Evaluation)
     return pitch, project_financials(sketch), evaluation
+
+
+def project_financials(sketch: FinancialSketch) -> Financials:
+    """Build the 12-month timeline from the officer's assumptions."""
+    assumptions = sketch.assumptions
+    customers = float(assumptions.starting_customers)
+    monthly = []
+    for month in range(1, 13):
+        monthly.append(
+            MonthRevenue(
+                month=month,
+                revenue_usd=round(customers * sketch.blended_monthly_price_usd, 2),
+            )
+        )
+        customers *= (1 + assumptions.monthly_growth_rate) * (
+            1 - assumptions.monthly_churn_rate
+        )
+    return Financials(
+        monetization_summary=sketch.monetization_summary,
+        tiers=sketch.tiers,
+        assumptions=assumptions,
+        monthly_revenue=monthly,
+        year_one_total_usd=round(sum(row.revenue_usd for row in monthly), 2),
+    )
