@@ -30,7 +30,7 @@ If you see `CacheableResult` import errors after `pip install -U`, keep `litellm
 ## Run locally (Streamlit)
 
 ```bash
-streamlit run app.py
+streamlit run streamlit_app.py
 ```
 
 Type an idea, or use one of the sample ideas, then run the crew. The page shows three stages while the crew runs, then opens tabs for the pitch, the financials, and the evaluation.
